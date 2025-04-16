@@ -32,35 +32,31 @@ This project serves as a foundational implementation, showcasing agent coordinat
 
 ## Architecture Overview
 
-The system follows a hierarchical pattern where the `GovernanceOrchestrator` acts as the main entry point, routing requests based on context to the appropriate `ContextOrchestrator`. Each `ContextOrchestrator` then manages a workflow involving its own instances of specialized agents and tools.
+The system follows a hierarchical pattern:
 
-```mermaid
-graph TD
-    A[User Request] --> B{GovernanceOrchestrator};
-    B -->|Planning Context| C[PlanningOrchestrator];
-    B -->|Execution Context| D[ExecutionOrchestrator];
-    B -->|Evaluation Context| E[EvaluationOrchestrator];
-    B -->|Reflection Context| F[ReflectionOrchestrator];
-    B -->|Resolution Context| G[ResolutionOrchestrator];
-    subgraph Context Workflow Example (Planning)
-        C --> H(BusinessAgent);
-        C --> I(ValueSoulAgent);
-        C --> J(TeamSpiritAgent);
-        C --> K[HITL Tools]; // Changed shape to rectangle for compatibility
-    end
-    subgraph Specialized Agent Tools
-        H --> L[Task Tools];
-        I --> M[Partnership Doc Tools];
-        J --> N[Meeting/Profile Tools];
-    end
-    L --> O{documents/tasks_*.md};
-    M --> P{documents/partnership_*.md};
-    N --> Q{documents/meetings/*.md};
-    N --> R{documents/profiles/*.md};
-```
+1.  **User Request:** The process starts with a user submitting a request.
+2.  **`GovernanceOrchestrator` (`root_agent`):** Receives the request, analyzes it to determine the relevant governance context (Planning, Execution, Evaluation, Reflection, or Resolution).
+3.  **Context Routing:** Transfers control to the single appropriate `ContextOrchestrator` based on the identified context.
+4.  **`ContextOrchestrator` (e.g., `PlanningOrchestrator`):**
+    *   Receives the request from the `GovernanceOrchestrator`.
+    *   Manages the specific workflow for its context.
+    *   Sequentially calls its own instances of specialized agents and/or HITL tools as needed for the workflow. Example calls within a Planning context:
+        *   `BusinessAgent`
+        *   `ValueSoulAgent`
+        *   `TeamSpiritAgent`
+        *   HITL Tools (Placeholders)
+5.  **Specialized Agents (e.g., `BusinessAgent`, `ValueSoulAgent`, `TeamSpiritAgent`):**
+    *   Receive specific tasks from their parent `ContextOrchestrator`.
+    *   Execute their specialized logic.
+    *   Interact with specific tools to access or modify data.
+6.  **Tools:**
+    *   `Task Tools` (used by `BusinessAgent`) -> Interact with `documents/tasks_*.md`.
+    *   `Partnership Doc Tools` (used by `ValueSoulAgent`) -> Interact with `documents/partnership_*.md`.
+    *   `Meeting/Profile Tools` (used by `TeamSpiritAgent`) -> Interact with `documents/meetings/*.md` and `documents/profiles/*.md`.
+7.  **Response:** The final result is consolidated and returned up the chain to the user.
 
 *   **`GovernanceOrchestrator` (`test_agents/agent.py`):** The main entry point (`root_agent`). Analyzes user requests and transfers control to the appropriate `ContextOrchestrator`.
-*   **`ContextOrchestrators` (`test_agents/context_orchestrators/`):** Five orchestrators, each managing workflows for a specific governance context (Planning, Execution, etc.). They call specialized agents and Human-in-the-Loop (HITL) tools sequentially based on the request variant.
+*   **`ContextOrchestrators` (`test_agents/context_orchestrators/`):** Five orchestrators, each managing workflows for a specific governance context (Planning, Execution, Evaluation, Reflection, Resolution). They call specialized agents and Human-in-the-Loop (HITL) tools sequentially based on the request variant.
 *   **Specialized Agents (`test_agents/*.py`, `*_base.py`):** These agents execute specific tasks within a context workflow, each bringing a unique focus:
     *   `BusinessAgent`: Focuses on operational excellence, task management, and project success metrics. Reads/writes task lists.
     *   `ValueSoulAgent`: Acts as the guardian of the organization's "constitution" (values, principles). Ensures decisions and actions align with core values defined in partnership documents. Reads partnership agreement/companion docs.
