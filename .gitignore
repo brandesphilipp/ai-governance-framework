@@ -1,0 +1,36 @@
+# Environment variables
+.env
+
+# Sensitive project specific documents and logs
+documents/
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment directories
+venv/
+.venv/
+env/
+.env/
+env.bak/
+venv.bak/
+
+# OS-specific files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# ADK evaluation sets
+*.evalset.json
+
+# IDE / Editor specific files
+.vscode/
+.idea/
+
+# Personal Files
+PLANNING.md
+TASK.md
