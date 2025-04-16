@@ -46,7 +46,7 @@ graph TD
         C --> H(BusinessAgent);
         C --> I(ValueSoulAgent);
         C --> J(TeamSpiritAgent);
-        C --> K((HITL Tools));
+        C --> K[HITL Tools]; // Changed shape to rectangle for compatibility
     end
     subgraph Specialized Agent Tools
         H --> L[Task Tools];
